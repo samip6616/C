@@ -1,86 +1,85 @@
+//WAP in C to find Boolean Matrix conjunction, disjunction and product.
 #include <stdio.h>
 
-int readSet(int set[]) {
-    int n, i;
-    printf("Enter number of elements: ");
-    scanf("%d", &n);
-    printf("Enter elements: ");
-    for (i = 0; i < n; i++) {
-        scanf("%d", &set[i]);
+#define MAX 10
+
+void inputMatrix(int matrix[MAX][MAX], int rows, int cols) {
+    printf("Enter the elements of the matrix (0 for false, 1 for true):\n");
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            scanf("%d", &matrix[i][j]);
+        }
     }
-    return n;
 }
 
-void printSet(int set[], int n) {
-    int i;
-    printf("{ ");
-    for (i = 0; i < n; i++) {
-        printf("%d ", set[i]);
+void printMatrix(int matrix[MAX][MAX], int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            printf("%d ", matrix[i][j]);
+        }
+        printf("\n");
     }
-    printf("}\n");
 }
 
-int isMember(int set[], int n, int elem) {
-    int i;
-    for (i = 0; i < n; i++) {
-        if (set[i] == elem)
-            return 1;
+void booleanConjunction(int A[MAX][MAX], int B[MAX][MAX], int result[MAX][MAX], int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            result[i][j] = A[i][j] && B[i][j]; // AND operation
+        }
     }
-    return 0;
 }
 
-int setUnion(int set1[], int n1, int set2[], int n2, int result[]) {
-    int i, k = 0;
-    for (i = 0; i < n1; i++)
-        result[k++] = set1[i];
-    for (i = 0; i < n2; i++) {
-        if (!isMember(set1, n1, set2[i]))
-            result[k++] = set2[i];
+void booleanDisjunction(int A[MAX][MAX], int B[MAX][MAX], int result[MAX][MAX], int rows, int cols) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            result[i][j] = A[i][j] || B[i][j]; // OR operation
+        }
     }
-    return k;
 }
 
-int setIntersection(int set1[], int n1, int set2[], int n2, int result[]) {
-    int i, k = 0;
-    for (i = 0; i < n1; i++) {
-        if (isMember(set2, n2, set1[i]))
-            result[k++] = set1[i];
+void booleanProduct(int A[MAX][MAX], int B[MAX][MAX], int result[MAX][MAX], int rowsA, int colsA, int colsB) {
+    for (int i = 0; i < rowsA; i++) {
+        for (int j = 0; j < colsB; j++) {
+            result[i][j] = 0; // Initialize result
+            for (int k = 0; k < colsA; k++) {
+                result[i][j] = result[i][j] || (A[i][k] && B[k][j]); // Boolean product operation
+            }
+        }
     }
-    return k;
-}
-
-int setDifference(int set1[], int n1, int set2[], int n2, int result[]) {
-    int i, k = 0;
-    for (i = 0; i < n1; i++) {
-        if (!isMember(set2, n2, set1[i]))
-            result[k++] = set1[i];
-    }
-    return k;
 }
 
 int main() {
-    int set1[100], set2[100], result[100];
-    int n1, n2, nResult, choice;
+    int A[MAX][MAX], B[MAX][MAX], result[MAX][MAX];
+    int rows, cols;
 
-    printf("Enter Set 1:\n");
-    n1 = readSet(set1);
+    // Input dimensions
+    printf("Enter number of rows and columns for the matrices: ");
+    scanf("%d %d", &rows, &cols);
 
-    printf("Enter Set 2:\n");
-    n2 = readSet(set2);
+    // Input first matrix
+    printf("Matrix A:\n");
+    inputMatrix(A, rows, cols);
 
-    printf("\nSet 1: ");
-    printSet(set1, n1);
-    printf("Set 2: ");
-    printSet(set2, n2);
+    // Input second matrix
+    printf("Matrix B:\n");
+    inputMatrix(B, rows, cols);
 
-            nResult = setUnion(set1, n1, set2, n2, result);
-            printf("Union: ");
-            printSet(result, nResult);
-            nResult = setIntersection(set1, n1, set2, n2, result);
-            printf("Intersection: ");
-            printSet(result, nResult);
-            nResult = setDifference(set1, n1, set2, n2, result);
-            printf("Difference (Set1 - Set2): ");
-            printSet(result, nResult);
+    // Boolean Conjunction
+    booleanConjunction(A, B, result, rows, cols);
+    printf("Boolean Conjunction (A AND B):\n");
+    printMatrix(result, rows, cols);
+
+    // Boolean Disjunction
+    booleanDisjunction(A, B, result, rows, cols);
+    printf("Boolean Disjunction (A OR B):\n");
+    printMatrix(result, rows, cols);
+
+    // Boolean Product
+    // printf("Matrix B (for product):\n");
+    // inputMatrix(B, cols, rows); // Note: B must be transposed for product
+    booleanProduct(A, B, result, rows, cols, rows);
+    printf("Boolean Product (A * B):\n");
+    printMatrix(result, rows, rows);
+
     return 0;
 }
